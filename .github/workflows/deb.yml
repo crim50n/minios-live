@@ -1,0 +1,34 @@
+name: Build Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          debootstrap xorriso genisoimage binutils squashfs-tools \
+          grub-pc-bin grub-efi-amd64-bin dosfstools mtools xz-utils zstd \
+          curl rsync dpkg-dev debhelper devscripts build-essential fakeroot \
+          lintian dh-make pandoc
+
+    - name: Build deb package
+      run: |
+        echo "Building deb package..."
+        chmod +x tools/build-package.sh
+        sudo ./tools/build-package.sh
+        echo "deb package build completed."
+
+    - name: Archive deb package
+      uses: actions/upload-artifact@v3
+      with:
+        name: minios-live-${{ env.DATE }}
+        path: build/*.deb
