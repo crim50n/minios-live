@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -25,7 +24,7 @@ jobs:
     - name: Run build - standard amd64
       run: |
         echo "Starting build for standard amd64..."
-        sudo ./minios-cmd -d bookworm -a amd64 -de core -pv standard -aufs
+        sudo ./minios-cmd -d bookworm -a amd64 -de core -pv standard -aufs  # Removed -dkms and -kl, changed -de to core
         sudo mkdir -p build/output/standard-amd64
         sudo mv build/iso/*.iso build/output/standard-amd64/
         echo "Build completed for standard amd64."
@@ -33,14 +32,12 @@ jobs:
     - name: Archive build output - standard amd64
       uses: actions/upload-artifact@v3
       with:
-        name: minios-bookworm-xfce-standard-amd64-${{ env.DATE }}
-        path: build/output/standard-amd64/*.iso
-
+        name: minios-bookworm-core-standard-amd64-${{ env.DATE }} # Changed name to reflect core desktop
+        path: build/output/standard-amd64
 
   release:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -69,7 +66,7 @@ jobs:
 
     - name: Upload Release Assets
       run: |
-        for artifact in ./artifacts/*; do
+        for artifact in ./artifacts/*/*; do
           asset_name=$(basename $artifact)
           echo "Uploading $asset_name"
           curl \
