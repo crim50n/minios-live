@@ -1,7 +1,9 @@
-name: Standard 64 + Debian package
+name: CI
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -31,7 +33,7 @@ jobs:
         sudo mv build/iso/*.iso build/output/standard-amd64/
         echo "Build completed for standard amd64."
 
-    - name: Archive build output - standard amd64
+    - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
         name: minios-bookworm-xfce-standard-amd64-${{ env.DATE }}
@@ -63,26 +65,24 @@ jobs:
       with:
         path: ./artifacts
 
-    - name: Create Release
+    - name: Create Pre-Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref == 'refs/heads/master' && github.sha || github.ref_name }}
+        tag_name: nightly-${{ env.DATE }}
+        release_name: Nightly Build ${{ env.DATE }}
         draft: false
         prerelease: true
 
-    - name: Upload Release Assets
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Pre-Release Assets
       run: |
         for artifact in ./artifacts/*; do
-          asset_name=$(basename "$artifact")
-          echo "Uploading $asset_name..."
-          curl -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
+          asset_name=$(basename $artifact)
+          echo "Uploading $asset_name"
+          curl \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @"$artifact" \
             "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
