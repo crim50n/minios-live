@@ -1,9 +1,7 @@
-name: CI
+name: Standard 64 + Debian package
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   build:
