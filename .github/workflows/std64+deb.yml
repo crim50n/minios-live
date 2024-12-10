@@ -1,7 +1,10 @@
-name: Standard 64 + Debian package
+name: Nightly Build
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -12,37 +15,19 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          debootstrap xorriso genisoimage binutils squashfs-tools \
-          grub-pc-bin grub-efi-amd64-bin dosfstools mtools xz-utils zstd \
-          curl rsync dpkg-dev debhelper devscripts build-essential fakeroot \
-          lintian dh-make pandoc
+      run: sudo apt-get update && sudo apt-get install -y debootstrap ...
 
     - name: Set date variable
       run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
     - name: Run build - standard amd64
-      run: |
-        echo "Starting build for standard amd64..."
-        sudo ./minios-cmd -d bookworm -a amd64 -de xfce -pv standard -aufs -dkms -kl
-        sudo mkdir -p build/output/standard-amd64
-        sudo mv build/iso/*.iso build/output/standard-amd64/
-        echo "Build completed for standard amd64."
+      run: sudo ./minios-cmd -d bookworm -a amd64 -de xfce ...
 
     - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
         name: minios-bookworm-xfce-standard-amd64-${{ env.DATE }}
         path: build/output/standard-amd64/*.iso
-
-    - name: Build deb package
-      run: |
-        echo "Building deb package..."
-        chmod +x tools/build-package.sh
-        sudo ./tools/build-package.sh
-        echo "deb package build completed."
 
     - name: Archive deb package
       uses: actions/upload-artifact@v3
@@ -67,7 +52,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PAT }}
       with:
         tag_name: nightly-${{ env.DATE }}
         release_name: Nightly Build ${{ env.DATE }}
@@ -80,7 +65,7 @@ jobs:
           asset_name=$(basename $artifact)
           echo "Uploading $asset_name"
           curl \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @"$artifact" \
             "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
