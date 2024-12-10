@@ -75,12 +75,14 @@ jobs:
         prerelease: true
 
     - name: Upload Release Assets
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         for artifact in ./artifacts/*; do
-          asset_name=$(basename $artifact)
-          echo "Uploading $asset_name"
-          curl \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          asset_name=$(basename "$artifact")
+          echo "Uploading $asset_name..."
+          curl -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @"$artifact" \
             "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
