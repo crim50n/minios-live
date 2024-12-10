@@ -1,4 +1,4 @@
-name: Build Package 1
+name: Build and Release Package
 
 on:
   workflow_dispatch:
@@ -23,7 +23,6 @@ jobs:
     - name: Build deb package
       run: |
         echo "Building deb package..."
-        sudo mkdir -p ./build
         chmod +x tools/build-package.sh
         sudo ./tools/build-package.sh
         echo "deb package build completed."
@@ -33,3 +32,39 @@ jobs:
       with:
         name: minios-live-${{ env.DATE }}
         path: build/*.deb
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./artifacts
+
+    - name: Create Pre-release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: nightly-${{ github.run_id }}
+        release_name: Nightly Build ${{ github.run_id }}
+        draft: false
+        prerelease: true
+
+    - name: Upload Release Assets
+      run: |
+        for artifact in ./artifacts/*; do
+          asset_name=$(basename $artifact)
+          echo "Uploading $asset_name"
+          curl \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @"$artifact" \
+            "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
+        done
