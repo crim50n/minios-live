@@ -25,7 +25,7 @@ jobs:
     - name: Run build - standard amd64
       run: |
         echo "Starting build for standard amd64..."
-        sudo ./minios-cmd -d bookworm -a amd64 -de xfce -pv standard -aufs -dkms -kl
+        sudo ./minios-cmd -d bookworm -a amd64 -de core -pv standard -aufs
         sudo mkdir -p build/output/standard-amd64
         sudo mv build/iso/*.iso build/output/standard-amd64/
         echo "Build completed for standard amd64."
