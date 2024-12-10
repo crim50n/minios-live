@@ -1,4 +1,4 @@
-name: CI
+name: Standard 64 + Debian package
 
 on:
   workflow_dispatch:
