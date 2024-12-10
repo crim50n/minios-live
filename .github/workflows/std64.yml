@@ -1,0 +1,74 @@
+name: CI - Standard amd64 Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          debootstrap xorriso genisoimage binutils squashfs-tools \
+          grub-pc-bin grub-efi-amd64-bin dosfstools mtools xz-utils zstd \
+          curl rsync
+
+    - name: Set date variable
+      run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
+    - name: Run build - standard amd64
+      run: |
+        echo "Starting build for standard amd64..."
+        sudo ./minios-cmd -d bookworm -a amd64 -de xfce -pv standard -aufs -dkms -kl
+        sudo mkdir -p build/output/standard-amd64
+        sudo mv build/iso/*.iso build/output/standard-amd64/
+        echo "Build completed for standard amd64."
+
+    - name: Archive build output - standard amd64
+      uses: actions/upload-artifact@v3
+      with:
+        name: minios-bookworm-xfce-standard-amd64-${{ env.DATE }}
+        path: build/output/standard-amd64/*.iso
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./artifacts
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref == 'refs/heads/master' && github.sha || github.ref_name }}
+        draft: false
+        prerelease: true
+
+    - name: Upload Release Assets
+      run: |
+        for artifact in ./artifacts/*; do
+          asset_name=$(basename $artifact)
+          echo "Uploading $asset_name"
+          curl \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @"$artifact" \
+            "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
+        done
