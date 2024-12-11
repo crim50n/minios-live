@@ -18,9 +18,6 @@ jobs:
           grub-pc-bin grub-efi-amd64-bin dosfstools mtools xz-utils zstd \
           curl rsync
 
-    - name: Set date variable
-      run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
-
     - name: Run build - Debian 12 Xfce Standard amd64
       run: |
         echo "Starting build for Debian 12 Xfce Standard amd64..."
