@@ -21,47 +21,103 @@ jobs:
     - name: Set date variable
       run: echo "DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
-    - name: Run build - Standard i386
+    - name: Run build - Debian 12 Xfce Standard amd64
       run: |
-        echo "Starting build for Standard i386..."
-        sudo ./minios-cmd -d bookworm -a i386 -de xfce -pv standard -aufs -kl
-        sudo mkdir -p build/output/standard-i386
-        sudo mv build/iso/*.iso build/output/standard-i386/
-        echo "Build completed for Standard i386."
-
-    - name: Archive build output - Standard i386
-      uses: actions/upload-artifact@v3
-      with:
-        name: minios-bookworm-xfce-Standard-i386-${{ env.DATE }}
-        path: build/output/standard-i386
-
-    - name: Run build - Standard amd64
-      run: |
-        echo "Starting build for Standard amd64..."
+        echo "Starting build for Debian 12 Xfce Standard amd64..."
         sudo ./minios-cmd -d bookworm -a amd64 -de xfce -pv standard -aufs -dkms -kl
-        sudo mkdir -p build/output/standard-amd64
-        sudo mv build/iso/*.iso build/output/standard-amd64/
-        echo "Build completed for Standard amd64."
+        sudo mkdir -p build/output/bookworm-xfce-standard-amd64
+        sudo mv build/iso/*.iso build/output/bookworm-xfce-standard-amd64/
+        echo "Build completed for Debian 12 Xfce Standard amd64."
 
-    - name: Archive build output - Standard amd64
+    - name: Archive build output - Debian 12 Xfce Standard amd64
       uses: actions/upload-artifact@v3
       with:
-        name: minios-bookworm-xfce-Standard-amd64-${{ env.DATE }}
-        path: build/output/standard-amd64
+        name: minios-bookworm-xfce-standard-amd64
+        path: build/output/bookworm-xfce-standard-amd64
 
-    - name: Run build - Toolbox amd64
+    - name: Run build - Debian 12 Xfce Standard i386
       run: |
-        echo "Starting build for Toolbox amd64..."
-        sudo ./minios-cmd -d bookworm -a amd64 -de xfce -pv toolbox -aufs -dkms -kl
-        sudo mkdir -p build/output/toolbox-amd64
-        sudo mv build/iso/*.iso build/output/toolbox-amd64/
-        echo "Build completed for Toolbox amd64."
+        echo "Starting build for Debian 12 Xfce Standard i386..."
+        sudo ./minios-cmd -d bookworm -a i386 -de xfce -pv standard -aufs -kl
+        sudo mkdir -p build/output/bookworm-xfce-standard-i386
+        sudo mv build/iso/*.iso build/output/bookworm-xfce-standard-i386/
+        echo "Build completed for Debian 12 Xfce Standard i386."
 
-    - name: Archive build output - Toolbox amd64
+    - name: Archive build output - Debian 12 Xfce Standard i386
       uses: actions/upload-artifact@v3
       with:
-        name: minios-bookworm-xfce-Toolbox-amd64-${{ env.DATE }}
-        path: build/output/toolbox-amd64
+        name: minios-bookworm-xfce-standard-i386
+        path: build/output/bookworm-xfce-standard-i386
+
+    - name: Run build - Debian 12 Xfce Toolbox amd64
+      run: |
+        echo "Starting build for Debian 12 Xfce Toolbox amd64..."
+        sudo ./minios-cmd -d bookworm -a amd64 -de xfce -pv toolbox -aufs -dkms -kl
+        sudo mkdir -p build/output/bookworm-xfce-toolbox-amd64
+        sudo mv build/iso/*.iso build/output/bookworm-xfce-toolbox-amd64/
+        echo "Build completed for Debian 12 Xfce Toolbox amd64."
+
+    - name: Archive build output - Debian 12 Xfce Toolbox amd64
+      uses: actions/upload-artifact@v3
+      with:
+        name: minios-bookworm-xfce-toolbox-amd64
+        path: build/output/bookworm-xfce-toolbox-amd64
+
+    - name: Run build - Debian 12 Flux Minimum amd64
+      run: |
+        echo "Starting build for Debian 12 Flux Minimum amd64..."
+        sudo ./minios-cmd -d bookworm -a amd64 -de flux -pv minimum -aufs -dkms -kl
+        sudo mkdir -p build/output/bookworm-flux-minimum-amd64
+        sudo mv build/iso/*.iso build/output/bookworm-flux-minimum-amd64/
+        echo "Build completed for Debian 12 Flux Minimum amd64."
+
+    - name: Archive build output - Debian 12 Flux Minimum amd64
+      uses: actions/upload-artifact@v3
+      with:
+        name: minios-bookworm-flux-minimum-amd64
+        path: build/output/bookworm-flux-minimum-amd64
+
+    - name: Run build - Debian 12 Flux Minimum i386
+      run: |
+        echo "Starting build for Debian 12 Flux Minimum i386..."
+        sudo ./minios-cmd -d bookworm -a i386 -de flux -pv minimum -aufs -kl
+        sudo mkdir -p build/output/bookworm-flux-minimum-i386
+        sudo mv build/iso/*.iso build/output/bookworm-flux-minimum-i386/
+        echo "Build completed for Debian 12 Flux Minimum i386."
+
+    - name: Archive build output - Debian 12 Flux Minimum i386
+      uses: actions/upload-artifact@v3
+      with:
+        name: minios-bookworm-flux-minimum-i386
+        path: build/output/bookworm-flux-minimum-i386
+
+    - name: Run build - Debian 10 Xfce Standard amd64
+      run: |
+        echo "Starting build for Debian 10 Xfce Standard amd64..."
+        sudo ./minios-cmd -d buster -a amd64 -de xfce -pv standard -aufs -dkms -kl
+        sudo mkdir -p build/output/buster-xfce-standard-amd64
+        sudo mv build/iso/*.iso build/output/buster-xfce-standard-amd64/
+        echo "Build completed for Debian 10 Xfce Standard amd64."
+
+    - name: Archive build output - Debian 10 Xfce Standard amd64
+      uses: actions/upload-artifact@v3
+      with:
+        name: minios-buster-xfce-standard-amd64
+        path: build/output/buster-xfce-standard-amd64
+
+    - name: Run build - Debian 10 Xfce Standard i386
+      run: |
+        echo "Starting build for Debian 10 Xfce Standard i386..."
+        sudo ./minios-cmd -d buster -a i386 -de xfce -pv standard -aufs -kl
+        sudo mkdir -p build/output/buster-xfce-standard-i386
+        sudo mv build/iso/*.iso build/output/buster-xfce-standard-i386/
+        echo "Build completed for Debian 10 Xfce Standard i386."
+
+    - name: Archive build output - Debian 10 Xfce Standard i386
+      uses: actions/upload-artifact@v3
+      with:
+        name: minios-buster-xfce-standard-i386
+        path: build/output/buster-xfce-standard-i386
 
   release:
     needs: build
@@ -78,7 +134,7 @@ jobs:
     - name: Set Release Tag Name
       id: set_tag
       run: |
-        TAG="release-$(date +%Y%m%d)"
+        TAG="$(date +%Y%m%d)"
         echo "::set-output name=tag_name::$TAG"
 
     - name: Create Release
@@ -88,7 +144,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.set_tag.outputs.tag_name }}
-        release_name: Release ${{ steps.set_tag.outputs.tag_name }}
+        release_name: Build ${{ steps.set_tag.outputs.tag_name }}
         draft: false
         prerelease: true
 
