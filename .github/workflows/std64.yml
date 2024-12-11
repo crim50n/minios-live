@@ -69,9 +69,10 @@ jobs:
         for artifact in ./artifacts/*/*; do
           asset_name=$(basename $artifact)
           echo "Uploading $asset_name"
+          upload_url=$(echo "${{ steps.create_release.outputs.upload_url }}" | sed 's/{?name,label}//') # Remove the placeholder
           curl \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @"$artifact" \
-            "${{ steps.create_release.outputs.upload_url }}?name=$asset_name"
+            "$upload_url?name=$asset_name" # Correctly append the name parameter
         done
