@@ -132,7 +132,7 @@ jobs:
       id: set_tag
       run: |
         TAG="$(date +%Y%m%d)"
-        echo "::set-output name=tag_name::$TAG"
+        echo "tag_name=$TAG" >> $GITHUB_ENV
 
     - name: Create Release
       id: create_release
@@ -140,8 +140,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.set_tag.outputs.tag_name }}
-        release_name: Build ${{ steps.set_tag.outputs.tag_name }}
+        tag_name: ${{ env.tag_name }}
+        release_name: Build ${{ env.tag_name }}
         draft: false
         prerelease: true
 
